@@ -1,0 +1,129 @@
+.sidebar {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-section {
+  margin-bottom: 2rem;
+}
+
+.sidebar-section:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  color: #2c3e50;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #3498db;
+}
+
+/* Search */
+.search-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.7rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.search-btn {
+  padding: 0.7rem 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background-color 0.3s ease;
+}
+
+.search-btn:hover {
+  background-color: #2980b9;
+}
+
+/* Categories */
+.category-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.category-list li {
+  margin-bottom: 0.7rem;
+}
+
+.category-list li a {
+  display: flex;
+  justify-content: space-between;
+  text-decoration: none;
+  color: #555;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.category-list li a:hover {
+  background-color: #f8f9fa;
+  color: #3498db;
+}
+
+.category-count {
+  color: #95a5a6;
+  font-size: 0.9rem;
+}
+
+/* Recent Posts */
+.recent-posts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.recent-posts li {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.recent-posts li:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.recent-posts li a {
+  text-decoration: none;
+  color: #2c3e50;
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.recent-posts li a:hover {
+  color: #3498db;
+}
+
+.recent-date {
+  font-size: 0.85rem;
+  color: #95a5a6;
+}
+
+@media (max-width: 968px) {
+  .sidebar {
+    margin-top: 2rem;
+  }
+}
