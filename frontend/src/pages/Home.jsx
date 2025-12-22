@@ -14,85 +14,85 @@ function Home({ isAdmin }) {
   // Mock data for demonstration
   const featuredPost = {
     id: 1,
-    title: 'Welcome to My Personal Blog',
-    excerpt: 'Discover amazing articles, insights, and stories from our community of writers. Join us on a journey through technology, creativity, and innovation.',
-    author: 'John Doe',
+    title: '10 Món Ăn Việt Nam Dễ Làm Cho Bữa Tối Gia Đình',
+    excerpt: 'Khám phá những món ăn truyền thống Việt Nam vừa ngon miệng, vừa dễ thực hiện trong bếp nhà bạn. Từ canh chua đến thịt kho tàu, tất cả đều có thể làm chỉ trong vòng 30 phút.',
+    author: 'Minh Anh',
     date: 'December 22, 2025',
-    category: 'Featured',
-    image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&h=600&fit=crop'
+    category: 'Nấu Ăn',
+    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=600&fit=crop'
   };
 
   const posts = [
     {
       id: 2,
-      title: 'Getting Started with React 19',
-      excerpt: 'Learn the latest features and improvements in React 19 and how to leverage them in your projects.',
-      author: 'Jane Smith',
+      title: 'Cách Làm Bánh Mì Việt Nam Tại Nhà Đơn Giản',
+      excerpt: 'Hướng dẫn chi tiết cách làm bánh mì Việt Nam giòn tan với nhân thịt nguội, pate, và rau thơm. Bí quyết làm vỏ bánh mì thơm ngon như ngoài tiệm.',
+      author: 'Thu Hương',
       date: 'December 20, 2025',
-      category: 'React',
-      image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop'
+      category: 'Nấu Ăn',
+      image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop'
     },
     {
       id: 3,
-      title: 'Node.js Best Practices for 2025',
-      excerpt: 'Explore the best practices and patterns for building scalable Node.js applications in 2025.',
-      author: 'Mike Johnson',
+      title: 'Bài Tập Yoga Buổi Sáng Cho Sức Khỏe Dẻo Dai',
+      excerpt: 'Khám phá 5 động tác yoga đơn giản giúp khởi động cơ thể, tăng cường sức khỏe và tinh thần tốt hơn mỗi buổi sáng chỉ trong 15 phút.',
+      author: 'Tuấn Anh',
       date: 'December 18, 2025',
-      category: 'Node.js',
-      image: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=400&h=300&fit=crop'
+      category: 'Thể Thao',
+      image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=300&fit=crop'
     },
     {
       id: 4,
-      title: 'MySQL Performance Optimization Tips',
-      excerpt: 'Boost your database performance with these essential MySQL optimization techniques.',
-      author: 'Sarah Wilson',
+      title: 'Mẹo Sắp Xếp Tủ Quần Áo Gọn Gàng và Khoa Học',
+      excerpt: 'Chia sẻ những mẹo hay giúp tủ quần áo của bạn luôn gọn gàng, dễ tìm kiếm và tiết kiệm không gian. Áp dụng phương pháp KonMari hiệu quả.',
+      author: 'Lan Anh',
       date: 'December 15, 2025',
-      category: 'Database',
-      image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=400&h=300&fit=crop'
+      category: 'Cuộc Sống',
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop'
     },
     {
       id: 5,
-      title: 'Building RESTful APIs with Express',
-      excerpt: 'A comprehensive guide to creating robust and scalable REST APIs using Express.js.',
-      author: 'John Doe',
+      title: 'Top 5 Điểm Du Lịch Miền Bắc Không Thể Bỏ Qua',
+      excerpt: 'Khám phá vẻ đẹp hùng vĩ của miền Bắc Việt Nam với 5 điểm đến tuyệt vời: Hạ Long, Sapa, Ninh Bình, Hà Giang và Mai Châu. Hướng dẫn chi tiết cho chuyến đi.',
+      author: 'Hoàng Nam',
       date: 'December 12, 2025',
-      category: 'Backend',
-      image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=300&fit=crop'
+      category: 'Du Lịch',
+      image: 'https://images.unsplash.com/photo-1528127269322-539801943592?w=400&h=300&fit=crop'
     },
     {
       id: 6,
-      title: 'Modern CSS Techniques for 2025',
-      excerpt: 'Discover the latest CSS features and techniques to create stunning web designs.',
-      author: 'Emily Brown',
+      title: 'Mẹo Tiết Kiệm Điện Trong Gia Đình Hiệu Quả',
+      excerpt: 'Những cách đơn giản giúp giảm thiểu hóa đơn tiền điện hàng tháng mà vẫn đảm bảo sinh hoạt thoải mái. Tiết kiệm đến 30% chi phí điện năng.',
+      author: 'Minh Hà',
       date: 'December 10, 2025',
-      category: 'CSS',
-      image: 'https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?w=400&h=300&fit=crop'
+      category: 'Mẹo Vặt',
+      image: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=300&fit=crop'
     },
     {
       id: 7,
-      title: 'JavaScript Design Patterns',
-      excerpt: 'Master common design patterns in JavaScript to write cleaner and more maintainable code.',
-      author: 'David Lee',
+      title: 'Chạy Bộ Mỗi Ngày: Lợi Ích và Cách Tập Đúng',
+      excerpt: 'Tìm hiểu về những lợi ích tuyệt vời của việc chạy bộ đều đặn và cách thực hiện bài tập chạy bộ đúng kỹ thuật để tránh chấn thương và đạt hiệu quả cao nhất.',
+      author: 'Đức Minh',
       date: 'December 8, 2025',
-      category: 'JavaScript',
-      image: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=400&h=300&fit=crop'
+      category: 'Thể Thao',
+      image: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=400&h=300&fit=crop'
     }
   ];
 
   const categories = [
-    { id: 1, name: 'React', slug: 'react', count: 12 },
-    { id: 2, name: 'Node.js', slug: 'nodejs', count: 8 },
-    { id: 3, name: 'Database', slug: 'database', count: 15 },
-    { id: 4, name: 'Backend', slug: 'backend', count: 10 },
-    { id: 5, name: 'CSS', slug: 'css', count: 7 },
-    { id: 6, name: 'JavaScript', slug: 'javascript', count: 20 }
+    { id: 1, name: 'Nấu Ăn', slug: 'nau-an', count: 15 },
+    { id: 2, name: 'Thể Thao', slug: 'the-thao', count: 12 },
+    { id: 3, name: 'Cuộc Sống', slug: 'cuoc-song', count: 18 },
+    { id: 4, name: 'Mẹo Vặt', slug: 'meo-vat', count: 10 },
+    { id: 5, name: 'Du Lịch', slug: 'du-lich', count: 14 },
+    { id: 6, name: 'Sức Khỏe', slug: 'suc-khoe', count: 8 }
   ];
 
   const user = {
-    name: 'John Doe',
-    role: 'Full Stack Developer',
-    bio: 'Passionate writer sharing insights on technology, programming, and life experiences.',
-    avatar: 'https://ui-avatars.com/api/?name=John+Doe&size=200&background=3498db&color=fff',
+    name: 'Minh Anh',
+    role: 'Blogger & Content Creator',
+    bio: 'Chia sẻ kinh nghiệm sống, nấu ăn và du lịch. Yêu thích khám phá văn hóa Việt Nam và phong cách sống hiện đại.',
+    avatar: 'https://ui-avatars.com/api/?name=Minh+Anh&size=200&background=3498db&color=fff',
     postCount: 42,
     followers: 1.2
   };
