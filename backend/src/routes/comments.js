@@ -1,11 +1,12 @@
 import express from 'express';
 import pool from '../config/database.js';
 import { authenticateToken } from '../middleware/auth.js';
+import { generalLimiter, createLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
 
 // Get comments for a post
-router.get('/post/:postId', async (req, res) => {
+router.get('/post/:postId', generalLimiter, async (req, res) => {
   try {
     const [comments] = await pool.query(
       `SELECT c.*, u.name as author_name, u.email as author_email
@@ -24,7 +25,7 @@ router.get('/post/:postId', async (req, res) => {
 });
 
 // Create comment (requires authentication)
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', createLimiter, authenticateToken, async (req, res) => {
   try {
     const { postId, content } = req.body;
 
@@ -54,7 +55,7 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Delete comment (requires authentication and ownership)
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', generalLimiter, authenticateToken, async (req, res) => {
   try {
     // Check if comment belongs to user
     const [comments] = await pool.query(
