@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS categories (
 
 -- Insert sample admin user (password: admin123)
 INSERT INTO users (name, email, password, is_admin) VALUES
-('Admin User', 'admin@blog.com', '$2a$10$8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8OqxGxGxGxGxGxGxGxGxGxGxGxGxGxGxG', TRUE);
+('Admin User', 'admin@blog.com', '$2b$10$NyGkpaldV07ezTU6SEhNTOsamqzdHbctbsuos8GjzSiuNdOArb8lq', TRUE);
 
 -- Insert sample categories
 INSERT INTO categories (name, slug, description) VALUES

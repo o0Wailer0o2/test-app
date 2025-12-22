@@ -5,11 +5,19 @@ import './Login.css';
 function Login({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Validate passwords match for registration
+    if (isRegistering && password !== confirmPassword) {
+      alert('Passwords do not match!');
+      return;
+    }
+    
     // Mock login - in real app, this would call an API
     onLogin({ name: 'John Doe', email, isAdmin: email === 'admin@blog.com' });
     navigate('/');
@@ -48,6 +56,8 @@ function Login({ onLogin }) {
               <input
                 type="password"
                 id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm your password"
                 required
               />
