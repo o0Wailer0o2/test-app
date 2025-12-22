@@ -7,7 +7,7 @@ import ProfileCard from '../components/ProfileCard';
 import AdminPanel from '../components/AdminPanel';
 import './Home.css';
 
-function Home({ isLoggedIn, isAdmin }) {
+function Home({ isAdmin }) {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 6;
 

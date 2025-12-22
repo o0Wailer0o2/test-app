@@ -30,7 +30,6 @@ function App() {
             path="/" 
             element={
               <Home 
-                isLoggedIn={!!user} 
                 isAdmin={user?.isAdmin}
               />
             } 
