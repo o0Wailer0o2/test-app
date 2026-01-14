@@ -66,6 +66,15 @@ router.get('/:id', generalLimiter, async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
+    // Track post view
+    const userId = req.user?.id || null;
+    const sessionId = req.headers['x-session-id'] || req.ip || 'anonymous';
+    
+    await pool.query(
+      'INSERT INTO post_views (post_id, user_id, session_id) VALUES (?, ?, ?)',
+      [req.params.id, userId, sessionId]
+    );
+
     res.json(posts[0]);
   } catch (error) {
     console.error('Get post error:', error);
@@ -168,18 +177,36 @@ router.get('/categories', generalLimiter, async (req, res) => {
   }
 });
 
-// Get recent posts (limit to most recent)
+// Get recently viewed posts (based on user views)
 router.get('/recent', generalLimiter, async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 5;
+    const sessionId = req.headers['x-session-id'] || req.ip || 'anonymous';
+    const userId = req.user?.id || null;
     
+    // Get recently viewed posts for this user/session
     const [posts] = await pool.query(
-      `SELECT p.id, p.title, p.created_at
-       FROM posts p
-       ORDER BY p.created_at DESC
+      `SELECT DISTINCT p.id, p.title, MAX(pv.viewed_at) as last_viewed
+       FROM post_views pv
+       JOIN posts p ON pv.post_id = p.id
+       WHERE pv.session_id = ? OR pv.user_id = ?
+       GROUP BY p.id, p.title
+       ORDER BY last_viewed DESC
        LIMIT ?`,
-      [limit]
+      [sessionId, userId, limit]
     );
+
+    // If no viewed posts yet, return most recent posts
+    if (posts.length === 0) {
+      const [recentPosts] = await pool.query(
+        `SELECT p.id, p.title, p.created_at as last_viewed
+         FROM posts p
+         ORDER BY p.created_at DESC
+         LIMIT ?`,
+        [limit]
+      );
+      return res.json(recentPosts);
+    }
 
     res.json(posts);
   } catch (error) {

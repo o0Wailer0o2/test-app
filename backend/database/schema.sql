@@ -50,6 +50,20 @@ CREATE TABLE IF NOT EXISTS categories (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create post_views table to track recently read posts
+CREATE TABLE IF NOT EXISTS post_views (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  post_id INT NOT NULL,
+  user_id INT,
+  session_id VARCHAR(255),
+  viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+  INDEX idx_viewed_at (viewed_at DESC),
+  INDEX idx_post_user (post_id, user_id),
+  INDEX idx_post_session (post_id, session_id)
+);
+
 -- Insert sample admin user (password: admin123)
 INSERT INTO users (name, email, password, is_admin) VALUES
 ('Admin User', 'admin@blog.com', '$2b$10$NyGkpaldV07ezTU6SEhNTOsamqzdHbctbsuos8GjzSiuNdOArb8lq', TRUE);

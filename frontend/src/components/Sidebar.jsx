@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { fetchWithSession } from '../utils/session';
 import './Sidebar.css';
 
 function Sidebar({ categories, onSearch }) {
@@ -9,7 +10,7 @@ function Sidebar({ categories, onSearch }) {
   useEffect(() => {
     const fetchRecentPosts = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/posts/recent?limit=5');
+        const response = await fetchWithSession('http://localhost:3000/api/posts/recent?limit=5');
         const data = await response.json();
         setRecentPosts(data || []);
       } catch (error) {
@@ -67,7 +68,7 @@ function Sidebar({ categories, onSearch }) {
             <li key={post.id}>
               <Link to={`/post/${post.id}`}>{post.title}</Link>
               <span className="recent-date">
-                {new Date(post.created_at).toLocaleDateString('en-US', {
+                {new Date(post.last_viewed || post.created_at).toLocaleDateString('en-US', {
                   month: 'short',
                   day: 'numeric',
                   year: 'numeric'
