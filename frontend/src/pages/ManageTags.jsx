@@ -27,7 +27,7 @@ function ManageTags() {
         navigate('/');
         return;
       }
-    } catch (e) {
+    } catch {
       navigate('/login');
       return;
     }

@@ -51,10 +51,6 @@ function PostDetail() {
     fetchPost();
   }, [id]);
 
-  useEffect(() => {
-    fetchComments();
-  }, [id]);
-
   const fetchComments = async () => {
     try {
       const response = await fetch(`http://localhost:3000/api/comments/post/${id}`);
@@ -66,6 +62,11 @@ function PostDetail() {
       console.error('Error fetching comments:', err);
     }
   };
+
+  useEffect(() => {
+    fetchComments();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
