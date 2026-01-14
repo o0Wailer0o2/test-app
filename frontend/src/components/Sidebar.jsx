@@ -12,9 +12,16 @@ function Sidebar({ categories, onSearch }) {
       try {
         const response = await fetchWithSession('http://localhost:3000/api/posts/recent?limit=5');
         const data = await response.json();
-        setRecentPosts(data || []);
+        // Ensure data is an array before setting state
+        if (Array.isArray(data)) {
+          setRecentPosts(data);
+        } else {
+          console.error('Recent posts API returned non-array data:', data);
+          setRecentPosts([]);
+        }
       } catch (error) {
         console.error('Error fetching recent posts:', error);
+        setRecentPosts([]);
       }
     };
 
@@ -49,14 +56,18 @@ function Sidebar({ categories, onSearch }) {
       <div className="sidebar-section">
         <h3>Categories</h3>
         <ul className="category-list">
-          {categories && categories.map((category) => (
-            <li key={category.id}>
-              <Link to={`/category/${category.slug}`}>
-                {category.name}
-                <span className="category-count">({category.count})</span>
-              </Link>
-            </li>
-          ))}
+          {Array.isArray(categories) && categories.length > 0 ? (
+            categories.map((category) => (
+              <li key={category.id}>
+                <Link to={`/category/${category.slug}`}>
+                  {category.name}
+                  <span className="category-count">({category.count})</span>
+                </Link>
+              </li>
+            ))
+          ) : (
+            <li className="no-categories">No categories available</li>
+          )}
         </ul>
       </div>
 
@@ -64,18 +75,22 @@ function Sidebar({ categories, onSearch }) {
       <div className="sidebar-section">
         <h3>Recent Posts</h3>
         <ul className="recent-posts">
-          {recentPosts.map((post) => (
-            <li key={post.id}>
-              <Link to={`/post/${post.id}`}>{post.title}</Link>
-              <span className="recent-date">
-                {new Date(post.last_viewed || post.created_at).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric'
-                })}
-              </span>
-            </li>
-          ))}
+          {Array.isArray(recentPosts) && recentPosts.length > 0 ? (
+            recentPosts.map((post) => (
+              <li key={post.id}>
+                <Link to={`/post/${post.id}`}>{post.title}</Link>
+                <span className="recent-date">
+                  {new Date(post.last_viewed || post.created_at).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </span>
+              </li>
+            ))
+          ) : (
+            <li className="no-posts">No recent posts available</li>
+          )}
         </ul>
       </div>
     </aside>

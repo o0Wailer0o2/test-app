@@ -5,6 +5,80 @@ import { generalLimiter, createLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
 
+// Get all categories with post counts
+// IMPORTANT: This must be defined BEFORE /:id route to prevent "categories" from being treated as an ID
+router.get('/categories', generalLimiter, async (req, res) => {
+  try {
+    const [categories] = await pool.query(
+      `SELECT c.*, COUNT(p.id) as count 
+       FROM categories c 
+       LEFT JOIN posts p ON c.name = p.category 
+       GROUP BY c.id, c.name, c.slug, c.description, c.created_at
+       ORDER BY c.name`
+    );
+
+    res.json(categories);
+  } catch (error) {
+    console.error('Get categories error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get recently viewed posts (based on user views)
+// IMPORTANT: This must be defined BEFORE /:id route to prevent "recent" from being treated as an ID
+router.get('/recent', generalLimiter, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 5;
+    const sessionId = req.headers['x-session-id'] || req.ip || 'anonymous';
+    const userId = req.user?.id || null;
+    
+    let query;
+    let params;
+    
+    // Get recently viewed posts for this user/session
+    if (userId) {
+      // Logged in user - check both user_id and session_id
+      query = `SELECT DISTINCT p.id, p.title, MAX(pv.viewed_at) as last_viewed
+       FROM post_views pv
+       JOIN posts p ON pv.post_id = p.id
+       WHERE pv.user_id = ? OR pv.session_id = ?
+       GROUP BY p.id, p.title
+       ORDER BY last_viewed DESC
+       LIMIT ?`;
+      params = [userId, sessionId, limit];
+    } else {
+      // Anonymous user - check session_id only
+      query = `SELECT DISTINCT p.id, p.title, MAX(pv.viewed_at) as last_viewed
+       FROM post_views pv
+       JOIN posts p ON pv.post_id = p.id
+       WHERE pv.session_id = ?
+       GROUP BY p.id, p.title
+       ORDER BY last_viewed DESC
+       LIMIT ?`;
+      params = [sessionId, limit];
+    }
+    
+    const [posts] = await pool.query(query, params);
+
+    // If no viewed posts yet, return most recent posts
+    if (posts.length === 0) {
+      const [recentPosts] = await pool.query(
+        `SELECT p.id, p.title, p.created_at as last_viewed
+         FROM posts p
+         ORDER BY p.created_at DESC
+         LIMIT ?`,
+        [limit]
+      );
+      return res.json(recentPosts);
+    }
+
+    res.json(posts);
+  } catch (error) {
+    console.error('Get recent posts error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Get all posts (with pagination and optional category filter)
 router.get('/', generalLimiter, async (req, res) => {
   try {
@@ -158,78 +232,6 @@ router.delete('/:id', generalLimiter, authenticateToken, async (req, res) => {
     res.json({ message: 'Post deleted successfully' });
   } catch (error) {
     console.error('Delete post error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Get all categories with post counts
-router.get('/categories', generalLimiter, async (req, res) => {
-  try {
-    const [categories] = await pool.query(
-      `SELECT c.*, COUNT(p.id) as count 
-       FROM categories c 
-       LEFT JOIN posts p ON c.name = p.category 
-       GROUP BY c.id, c.name, c.slug, c.description, c.created_at
-       ORDER BY c.name`
-    );
-
-    res.json(categories);
-  } catch (error) {
-    console.error('Get categories error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Get recently viewed posts (based on user views)
-router.get('/recent', generalLimiter, async (req, res) => {
-  try {
-    const limit = parseInt(req.query.limit) || 5;
-    const sessionId = req.headers['x-session-id'] || req.ip || 'anonymous';
-    const userId = req.user?.id || null;
-    
-    let query;
-    let params;
-    
-    // Get recently viewed posts for this user/session
-    if (userId) {
-      // Logged in user - check both user_id and session_id
-      query = `SELECT DISTINCT p.id, p.title, MAX(pv.viewed_at) as last_viewed
-       FROM post_views pv
-       JOIN posts p ON pv.post_id = p.id
-       WHERE pv.user_id = ? OR pv.session_id = ?
-       GROUP BY p.id, p.title
-       ORDER BY last_viewed DESC
-       LIMIT ?`;
-      params = [userId, sessionId, limit];
-    } else {
-      // Anonymous user - check session_id only
-      query = `SELECT DISTINCT p.id, p.title, MAX(pv.viewed_at) as last_viewed
-       FROM post_views pv
-       JOIN posts p ON pv.post_id = p.id
-       WHERE pv.session_id = ?
-       GROUP BY p.id, p.title
-       ORDER BY last_viewed DESC
-       LIMIT ?`;
-      params = [sessionId, limit];
-    }
-    
-    const [posts] = await pool.query(query, params);
-
-    // If no viewed posts yet, return most recent posts
-    if (posts.length === 0) {
-      const [recentPosts] = await pool.query(
-        `SELECT p.id, p.title, p.created_at as last_viewed
-         FROM posts p
-         ORDER BY p.created_at DESC
-         LIMIT ?`,
-        [limit]
-      );
-      return res.json(recentPosts);
-    }
-
-    res.json(posts);
-  } catch (error) {
-    console.error('Get recent posts error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
