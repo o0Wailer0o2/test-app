@@ -87,29 +87,11 @@ function Home({ isAdmin }) {
     image: post.image
   }));
 
-  const categories = [
-    { id: 1, name: 'Nấu Ăn', slug: 'nau-an', count: 15 },
-    { id: 2, name: 'Thể Thao', slug: 'the-thao', count: 12 },
-    { id: 3, name: 'Cuộc Sống', slug: 'cuoc-song', count: 18 },
-    { id: 4, name: 'Mẹo Vặt', slug: 'meo-vat', count: 10 },
-    { id: 5, name: 'Du Lịch', slug: 'du-lich', count: 14 },
-    { id: 6, name: 'Sức Khỏe', slug: 'suc-khoe', count: 8 }
-  ];
-
-  const categories = [
-    { id: 1, name: 'Nấu Ăn', slug: 'nau-an', count: 15 },
-    { id: 2, name: 'Thể Thao', slug: 'the-thao', count: 12 },
-    { id: 3, name: 'Cuộc Sống', slug: 'cuoc-song', count: 18 },
-    { id: 4, name: 'Mẹo Vặt', slug: 'meo-vat', count: 10 },
-    { id: 5, name: 'Du Lịch', slug: 'du-lich', count: 14 },
-    { id: 6, name: 'Sức Khỏe', slug: 'suc-khoe', count: 8 }
-  ];
-
   const user = {
-    name: 'Minh Anh',
+    name: 'Sarah Johnson',
     role: 'Blogger & Content Creator',
-    bio: 'Chia sẻ kinh nghiệm sống, nấu ăn và du lịch. Yêu thích khám phá văn hóa Việt Nam và phong cách sống hiện đại.',
-    avatar: 'https://ui-avatars.com/api/?name=Minh+Anh&size=200&background=3498db&color=fff',
+    bio: 'Sharing delicious recipes and cooking tips for home cooks.',
+    avatar: 'https://ui-avatars.com/api/?name=Sarah+Johnson&size=200&background=3498db&color=fff',
     postCount: 42,
     followers: 1.2
   };

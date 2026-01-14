@@ -67,6 +67,9 @@ router.get('/:id', generalLimiter, async (req, res) => {
     }
 
     // Track post view
+    // Note: Each view creates a new record for analytics purposes.
+    // Consider implementing a cleanup job to remove views older than 30-90 days
+    // or aggregate them for long-term storage.
     const userId = req.user?.id || null;
     const sessionId = req.headers['x-session-id'] || req.ip || 'anonymous';
     
@@ -184,17 +187,33 @@ router.get('/recent', generalLimiter, async (req, res) => {
     const sessionId = req.headers['x-session-id'] || req.ip || 'anonymous';
     const userId = req.user?.id || null;
     
+    let query;
+    let params;
+    
     // Get recently viewed posts for this user/session
-    const [posts] = await pool.query(
-      `SELECT DISTINCT p.id, p.title, MAX(pv.viewed_at) as last_viewed
+    if (userId) {
+      // Logged in user - check both user_id and session_id
+      query = `SELECT DISTINCT p.id, p.title, MAX(pv.viewed_at) as last_viewed
        FROM post_views pv
        JOIN posts p ON pv.post_id = p.id
-       WHERE pv.session_id = ? OR pv.user_id = ?
+       WHERE pv.user_id = ? OR pv.session_id = ?
        GROUP BY p.id, p.title
        ORDER BY last_viewed DESC
-       LIMIT ?`,
-      [sessionId, userId, limit]
-    );
+       LIMIT ?`;
+      params = [userId, sessionId, limit];
+    } else {
+      // Anonymous user - check session_id only
+      query = `SELECT DISTINCT p.id, p.title, MAX(pv.viewed_at) as last_viewed
+       FROM post_views pv
+       JOIN posts p ON pv.post_id = p.id
+       WHERE pv.session_id = ?
+       GROUP BY p.id, p.title
+       ORDER BY last_viewed DESC
+       LIMIT ?`;
+      params = [sessionId, limit];
+    }
+    
+    const [posts] = await pool.query(query, params);
 
     // If no viewed posts yet, return most recent posts
     if (posts.length === 0) {

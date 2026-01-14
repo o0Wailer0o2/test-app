@@ -3,8 +3,13 @@ export const getSessionId = () => {
   let sessionId = localStorage.getItem('sessionId');
   
   if (!sessionId) {
-    // Generate a unique session ID
-    sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    // Generate a unique session ID using crypto API
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      sessionId = crypto.randomUUID();
+    } else {
+      // Fallback for older browsers
+      sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    }
     localStorage.setItem('sessionId', sessionId);
   }
   
