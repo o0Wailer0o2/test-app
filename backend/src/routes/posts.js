@@ -5,24 +5,35 @@ import { generalLimiter, createLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
 
-// Get all posts (with pagination)
+// Get all posts (with pagination and optional category filter)
 router.get('/', generalLimiter, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
+    const category = req.query.category;
 
-    const [posts] = await pool.query(
-      `SELECT p.*, u.name as author_name, u.email as author_email,
+    let query = `SELECT p.*, u.name as author_name, u.email as author_email,
        (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count
        FROM posts p
-       JOIN users u ON p.author_id = u.id
-       ORDER BY p.created_at DESC
-       LIMIT ? OFFSET ?`,
-      [limit, offset]
-    );
+       JOIN users u ON p.author_id = u.id`;
+    
+    let countQuery = 'SELECT COUNT(*) as total FROM posts';
+    const queryParams = [];
+    const countParams = [];
 
-    const [countResult] = await pool.query('SELECT COUNT(*) as total FROM posts');
+    if (category) {
+      query += ' WHERE p.category = ?';
+      countQuery += ' WHERE category = ?';
+      queryParams.push(category);
+      countParams.push(category);
+    }
+
+    query += ' ORDER BY p.created_at DESC LIMIT ? OFFSET ?';
+    queryParams.push(limit, offset);
+
+    const [posts] = await pool.query(query, queryParams);
+    const [countResult] = await pool.query(countQuery, countParams);
     const total = countResult[0].total;
 
     res.json({
@@ -135,6 +146,44 @@ router.delete('/:id', generalLimiter, authenticateToken, async (req, res) => {
     res.json({ message: 'Post deleted successfully' });
   } catch (error) {
     console.error('Delete post error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get all categories with post counts
+router.get('/categories', generalLimiter, async (req, res) => {
+  try {
+    const [categories] = await pool.query(
+      `SELECT c.*, COUNT(p.id) as count 
+       FROM categories c 
+       LEFT JOIN posts p ON c.name = p.category 
+       GROUP BY c.id, c.name, c.slug, c.description, c.created_at
+       ORDER BY c.name`
+    );
+
+    res.json(categories);
+  } catch (error) {
+    console.error('Get categories error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get recent posts (limit to most recent)
+router.get('/recent', generalLimiter, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 5;
+    
+    const [posts] = await pool.query(
+      `SELECT p.id, p.title, p.created_at
+       FROM posts p
+       ORDER BY p.created_at DESC
+       LIMIT ?`,
+      [limit]
+    );
+
+    res.json(posts);
+  } catch (error) {
+    console.error('Get recent posts error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

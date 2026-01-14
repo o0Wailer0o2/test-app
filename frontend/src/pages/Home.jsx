@@ -12,6 +12,7 @@ function Home({ isAdmin }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
+  const [categories, setCategories] = useState([]);
   const postsPerPage = 6;
 
   useEffect(() => {
@@ -33,6 +34,20 @@ function Home({ isAdmin }) {
 
     fetchPosts();
   }, [currentPage]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/posts/categories');
+        const data = await response.json();
+        setCategories(data || []);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   // Use the first post as featured, or mock data if no posts
   const featuredPost = posts.length > 0 ? {
@@ -71,6 +86,15 @@ function Home({ isAdmin }) {
     category: post.category,
     image: post.image
   }));
+
+  const categories = [
+    { id: 1, name: 'Nấu Ăn', slug: 'nau-an', count: 15 },
+    { id: 2, name: 'Thể Thao', slug: 'the-thao', count: 12 },
+    { id: 3, name: 'Cuộc Sống', slug: 'cuoc-song', count: 18 },
+    { id: 4, name: 'Mẹo Vặt', slug: 'meo-vat', count: 10 },
+    { id: 5, name: 'Du Lịch', slug: 'du-lich', count: 14 },
+    { id: 6, name: 'Sức Khỏe', slug: 'suc-khoe', count: 8 }
+  ];
 
   const categories = [
     { id: 1, name: 'Nấu Ăn', slug: 'nau-an', count: 15 },

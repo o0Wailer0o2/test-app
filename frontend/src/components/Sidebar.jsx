@@ -1,9 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Sidebar.css';
 
 function Sidebar({ categories, onSearch }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [recentPosts, setRecentPosts] = useState([]);
+
+  useEffect(() => {
+    const fetchRecentPosts = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/posts/recent?limit=5');
+        const data = await response.json();
+        setRecentPosts(data || []);
+      } catch (error) {
+        console.error('Error fetching recent posts:', error);
+      }
+    };
+
+    fetchRecentPosts();
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -48,18 +63,18 @@ function Sidebar({ categories, onSearch }) {
       <div className="sidebar-section">
         <h3>Recent Posts</h3>
         <ul className="recent-posts">
-          <li>
-            <Link to="/post/1">Getting Started with React</Link>
-            <span className="recent-date">Dec 20, 2025</span>
-          </li>
-          <li>
-            <Link to="/post/2">Node.js Best Practices</Link>
-            <span className="recent-date">Dec 18, 2025</span>
-          </li>
-          <li>
-            <Link to="/post/3">MySQL Optimization Tips</Link>
-            <span className="recent-date">Dec 15, 2025</span>
-          </li>
+          {recentPosts.map((post) => (
+            <li key={post.id}>
+              <Link to={`/post/${post.id}`}>{post.title}</Link>
+              <span className="recent-date">
+                {new Date(post.created_at).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
+              </span>
+            </li>
+          ))}
         </ul>
       </div>
     </aside>
