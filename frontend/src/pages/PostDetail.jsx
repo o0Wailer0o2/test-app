@@ -89,6 +89,8 @@ function PostDetail() {
 
         <div className="post-content">
           {post.content ? (
+            // Content contains HTML tags for formatting (h2, h3, etc.)
+            // In a production app, use DOMPurify to sanitize HTML before rendering
             <div dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br />') }} />
           ) : (
             <p>{post.excerpt || 'No content available'}</p>

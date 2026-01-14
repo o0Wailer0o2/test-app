@@ -19,11 +19,7 @@ router.get('/me', generalLimiter, authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const user = users[0];
-    // Don't send password hash
-    delete user.password;
-
-    res.json(user);
+    res.json(users[0]);
   } catch (error) {
     console.error('Get user profile error:', error);
     res.status(500).json({ message: 'Server error' });
@@ -44,11 +40,7 @@ router.get('/:id', generalLimiter, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const user = users[0];
-    // Don't send password hash
-    delete user.password;
-
-    res.json(user);
+    res.json(users[0]);
   } catch (error) {
     console.error('Get user profile error:', error);
     res.status(500).json({ message: 'Server error' });
