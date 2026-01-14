@@ -5,8 +5,12 @@ import './Profile.css';
 function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editForm, setEditForm] = useState({ avatar: '', bio: '' });
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -36,17 +40,109 @@ function Profile() {
 
         const data = await response.json();
         setUser(data);
+        setEditForm({ avatar: data.avatar || '', bio: data.bio || '' });
         setError(null);
+        
+        // Fetch user's posts
+        if (data.id) {
+          fetchUserPosts(data.id, token);
+        }
       } catch (err) {
         console.error('Error fetching user profile:', err);
         setError(err.message);
-      } finally {
         setLoading(false);
       }
     };
 
     fetchUserProfile();
   }, [navigate]);
+
+  const fetchUserPosts = async (userId, token) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/users/${userId}/posts?limit=100`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPosts(data.posts || []);
+      }
+    } catch (err) {
+      console.error('Error fetching user posts:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditProfile = () => {
+    setIsEditingProfile(true);
+    setError(null);
+    setSuccess(null);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingProfile(false);
+    setEditForm({ avatar: user?.avatar || '', bio: user?.bio || '' });
+    setError(null);
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3000/api/users/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(editForm)
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to update profile');
+      }
+
+      setSuccess('Profile updated successfully!');
+      setUser({ ...user, avatar: editForm.avatar, bio: editForm.bio });
+      setIsEditingProfile(false);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDeletePost = async (postId, postTitle) => {
+    if (!window.confirm(`Are you sure you want to delete "${postTitle}"?`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3000/api/posts/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to delete post');
+      }
+
+      setSuccess('Post deleted successfully!');
+      setPosts(posts.filter(post => post.id !== postId));
+      setUser({ ...user, post_count: user.post_count - 1 });
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   if (loading) {
     return (
@@ -56,7 +152,7 @@ function Profile() {
     );
   }
 
-  if (error) {
+  if (error && !user) {
     return (
       <div className="profile-container">
         <div className="error">
@@ -81,6 +177,9 @@ function Profile() {
   return (
     <div className="profile-container">
       <div className="profile-page">
+        {error && <div className="alert alert-error">{error}</div>}
+        {success && <div className="alert alert-success">{success}</div>}
+
         <div className="profile-header">
           <div className="profile-avatar-large">
             <img 
@@ -99,10 +198,51 @@ function Profile() {
 
         <div className="profile-body">
           <div className="profile-section">
-            <h2>About</h2>
-            <p className="profile-bio">
-              {user.bio || 'No bio provided yet. Click edit to add your bio.'}
-            </p>
+            <div className="section-header">
+              <h2>About</h2>
+              {!isEditingProfile && (
+                <button onClick={handleEditProfile} className="btn-edit-small">
+                  ✏️ Edit Profile
+                </button>
+              )}
+            </div>
+            
+            {isEditingProfile ? (
+              <form onSubmit={handleSaveProfile} className="edit-profile-form">
+                <div className="form-group">
+                  <label htmlFor="avatar">Profile Picture URL</label>
+                  <input
+                    type="text"
+                    id="avatar"
+                    value={editForm.avatar}
+                    onChange={(e) => setEditForm({ ...editForm, avatar: e.target.value })}
+                    placeholder="Enter image URL or leave blank for default"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="bio">About / Bio</label>
+                  <textarea
+                    id="bio"
+                    value={editForm.bio}
+                    onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                    placeholder="Tell us about yourself..."
+                    rows="4"
+                  />
+                </div>
+                <div className="form-actions">
+                  <button type="button" onClick={handleCancelEdit} className="btn-secondary">
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-primary">
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <p className="profile-bio">
+                {user.bio || 'No bio provided yet. Click edit to add your bio.'}
+              </p>
+            )}
           </div>
 
           <div className="profile-section">
@@ -122,6 +262,57 @@ function Profile() {
                 <div className="stat-label">Member Since</div>
               </div>
             </div>
+          </div>
+
+          {/* My Posts Section */}
+          <div className="profile-section">
+            <h2>My Posts ({posts.length})</h2>
+            {posts.length === 0 ? (
+              <p className="no-posts">You haven't created any posts yet.</p>
+            ) : (
+              <div className="posts-list">
+                {posts.map(post => (
+                  <div key={post.id} className="post-item">
+                    <div className="post-item-info">
+                      <h3 className="post-item-title">{post.title}</h3>
+                      <div className="post-item-meta">
+                        <span className="post-item-category">{post.category || 'Uncategorized'}</span>
+                        <span className="post-item-date">
+                          {new Date(post.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                        <span className="post-item-comments">
+                          💬 {post.comment_count || 0} comments
+                        </span>
+                      </div>
+                    </div>
+                    <div className="post-item-actions">
+                      <button
+                        onClick={() => navigate(`/post/${post.id}`)}
+                        className="btn-view"
+                      >
+                        View
+                      </button>
+                      <button
+                        onClick={() => navigate(`/edit-post/${post.id}`)}
+                        className="btn-edit"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeletePost(post.id, post.title)}
+                        className="btn-delete"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="profile-actions">
