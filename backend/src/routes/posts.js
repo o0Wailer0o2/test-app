@@ -24,6 +24,66 @@ router.get('/categories', generalLimiter, async (req, res) => {
   }
 });
 
+// Search posts
+// IMPORTANT: This must be defined BEFORE /:id route to prevent "search" from being treated as an ID
+router.get('/search', generalLimiter, async (req, res) => {
+  try {
+    const query = req.query.q || '';
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    if (!query.trim()) {
+      return res.json({
+        posts: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          pages: 0
+        }
+      });
+    }
+
+    const searchPattern = `%${query}%`;
+    
+    // Search in title, content, excerpt, and category
+    const searchQuery = `SELECT p.*, u.name as author_name, u.email as author_email,
+       (SELECT COUNT(*) FROM comments WHERE post_id = p.id) as comment_count
+       FROM posts p
+       JOIN users u ON p.author_id = u.id
+       WHERE p.title LIKE ? OR p.content LIKE ? OR p.excerpt LIKE ? OR p.category LIKE ?
+       ORDER BY p.created_at DESC LIMIT ? OFFSET ?`;
+    
+    const countQuery = `SELECT COUNT(*) as total FROM posts 
+       WHERE title LIKE ? OR content LIKE ? OR excerpt LIKE ? OR category LIKE ?`;
+    
+    const [posts] = await pool.query(searchQuery, [
+      searchPattern, searchPattern, searchPattern, searchPattern, limit, offset
+    ]);
+    
+    const [countResult] = await pool.query(countQuery, [
+      searchPattern, searchPattern, searchPattern, searchPattern
+    ]);
+    
+    const total = countResult[0].total;
+
+    res.json({
+      posts,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    console.error('Search posts error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 // Get recently viewed posts (based on user views)
 // IMPORTANT: This must be defined BEFORE /:id route to prevent "recent" from being treated as an ID
 router.get('/recent', generalLimiter, async (req, res) => {

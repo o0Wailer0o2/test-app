@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { fetchWithSession } from '../utils/session';
 import './Sidebar.css';
 
 function Sidebar({ categories, onSearch }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [recentPosts, setRecentPosts] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRecentPosts = async () => {
@@ -30,8 +31,14 @@ function Sidebar({ categories, onSearch }) {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (onSearch) {
-      onSearch(searchTerm);
+    if (searchTerm.trim()) {
+      // Navigate to search page with query parameter
+      navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+      
+      // Also call onSearch if provided (for backward compatibility)
+      if (onSearch) {
+        onSearch(searchTerm);
+      }
     }
   };
 

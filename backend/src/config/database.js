@@ -10,7 +10,11 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'blog_db',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  maxIdle: 10,
+  idleTimeout: 60000, // 60 seconds
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0
 });
 
 export default pool;
