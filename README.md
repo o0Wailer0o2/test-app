@@ -19,6 +19,9 @@ A full-stack personal blog application built with React, Node.js, Express, and M
 ### Admin Features:
 - Manage all posts
 - Add new posts
+- Create and manage tags
+- Assign tags to posts
+- Delete posts and comments
 - Manage categories
 - Manage users
 
@@ -147,8 +150,8 @@ The frontend will be available at `http://localhost:5173`
 
 ## Default Admin Account
 
-- Email: `admin@blog.com`
-- Password: `admin123` (Note: This is a sample password hash, update it in production)
+- Email: `admin@gmail.com`
+- Password: `admin`
 
 ## Building for Production
 
