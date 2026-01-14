@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { fetchWithSession } from '../utils/session';
 import './PostDetail.css';
 
 function PostDetail() {
@@ -13,7 +14,7 @@ function PostDetail() {
     const fetchPost = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/api/posts/${id}`);
+        const response = await fetchWithSession(`http://localhost:3000/api/posts/${id}`);
         
         if (!response.ok) {
           throw new Error('Post not found');

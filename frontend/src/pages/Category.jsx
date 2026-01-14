@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import HeroPost from '../components/HeroPost';
+import { useParams } from 'react-router-dom';
 import PostCard from '../components/PostCard';
 import Pagination from '../components/Pagination';
 import Sidebar from '../components/Sidebar';
@@ -7,19 +7,47 @@ import ProfileCard from '../components/ProfileCard';
 import AdminPanel from '../components/AdminPanel';
 import './Home.css';
 
-function Home({ isAdmin }) {
+function Category({ isAdmin }) {
+  const { slug } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
+  const [categoryName, setCategoryName] = useState('');
   const [categories, setCategories] = useState([]);
-  const postsPerPage = 6;
+  const postsPerPage = 9;
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/posts/categories');
+        const data = await response.json();
+        setCategories(data || []);
+        
+        // Find the category name from slug
+        const category = data.find(cat => cat.slug === slug);
+        if (category) {
+          setCategoryName(category.name);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, [slug]);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/api/posts?page=${currentPage}&limit=${postsPerPage}`);
+        // Convert slug to category name for filtering
+        const category = categories.find(cat => cat.slug === slug);
+        const categoryFilter = category ? category.name : '';
+        
+        const response = await fetch(
+          `http://localhost:3000/api/posts?page=${currentPage}&limit=${postsPerPage}&category=${encodeURIComponent(categoryFilter)}`
+        );
         const data = await response.json();
         
         setPosts(data.posts || []);
@@ -32,48 +60,12 @@ function Home({ isAdmin }) {
       }
     };
 
-    fetchPosts();
-  }, [currentPage]);
+    if (categories.length > 0) {
+      fetchPosts();
+    }
+  }, [currentPage, slug, categories]);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/api/posts/categories');
-        const data = await response.json();
-        setCategories(data || []);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  // Use the first post as featured, or mock data if no posts
-  const featuredPost = posts.length > 0 ? {
-    id: posts[0].id,
-    title: posts[0].title,
-    excerpt: posts[0].excerpt,
-    author: posts[0].author_name,
-    date: new Date(posts[0].created_at).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }),
-    category: posts[0].category,
-    image: posts[0].image
-  } : {
-    id: 1,
-    title: '10 Món Ăn Việt Nam Dễ Làm Cho Bữa Tối Gia Đình',
-    excerpt: 'Khám phá những món ăn truyền thống Việt Nam vừa ngon miệng, vừa dễ thực hiện trong bếp nhà bạn. Từ canh chua đến thịt kho tàu, tất cả đều có thể làm chỉ trong vòng 30 phút.',
-    author: 'Minh Anh',
-    date: 'December 22, 2025',
-    category: 'Nấu Ăn',
-    image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=600&fit=crop'
-  };
-
-  // Exclude featured post from the grid (skip first post)
-  const gridPosts = posts.slice(1).map(post => ({
+  const gridPosts = posts.map(post => ({
     id: post.id,
     title: post.title,
     excerpt: post.excerpt,
@@ -108,9 +100,21 @@ function Home({ isAdmin }) {
 
   return (
     <div className="home">
-      {/* Hero Section */}
-      <section className="hero-section">
-        <HeroPost post={featuredPost} />
+      {/* Category Header */}
+      <section className="category-header" style={{
+        padding: '60px 0 40px',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: 'white',
+        textAlign: 'center'
+      }}>
+        <div className="container">
+          <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>
+            {categoryName || 'Category'}
+          </h1>
+          <p style={{ fontSize: '1.1rem', opacity: 0.9 }}>
+            {posts.length} {posts.length === 1 ? 'post' : 'posts'} in this category
+          </p>
+        </div>
       </section>
 
       {/* Main Content */}
@@ -118,7 +122,6 @@ function Home({ isAdmin }) {
         <div className="content-wrapper">
           {/* Main Column */}
           <main className="main-content">
-            <h2 className="section-title">Latest Posts</h2>
             {loading ? (
               <div className="loading">Loading posts...</div>
             ) : (
@@ -129,15 +132,17 @@ function Home({ isAdmin }) {
                   ))}
                 </div>
                 {gridPosts.length === 0 && (
-                  <div className="no-posts">No posts found</div>
+                  <div className="no-posts">No posts found in this category</div>
                 )}
               </>
             )}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+            {gridPosts.length > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
           </main>
 
           {/* Sidebar */}
@@ -152,4 +157,4 @@ function Home({ isAdmin }) {
   );
 }
 
-export default Home;
+export default Category;

@@ -7,6 +7,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import PostDetail from './pages/PostDetail';
 import Profile from './pages/Profile';
+import Category from './pages/Category';
 import './App.css';
 
 function App() {
@@ -58,6 +59,10 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/post/:id" element={<PostDetail />} />
           <Route path="/profile" element={<Profile />} />
+          <Route 
+            path="/category/:slug" 
+            element={<Category isAdmin={user?.isAdmin} />} 
+          />
         </Routes>
       </div>
     </Router>
