@@ -8,6 +8,7 @@ import Contact from './pages/Contact';
 import PostDetail from './pages/PostDetail';
 import Profile from './pages/Profile';
 import Category from './pages/Category';
+import Search from './pages/Search';
 import CreatePost from './pages/CreatePost';
 import EditPost from './pages/EditPost';
 import ManageCategories from './pages/ManageCategories';
@@ -68,6 +69,10 @@ function App() {
           <Route 
             path="/category/:slug" 
             element={<Category isAdmin={user?.isAdmin} />} 
+          />
+          <Route 
+            path="/search" 
+            element={<Search isAdmin={user?.isAdmin} />} 
           />
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/edit-post/:id" element={<EditPost />} />
