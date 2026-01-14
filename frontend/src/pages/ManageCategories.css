@@ -41,7 +41,7 @@
   border: 1px solid #cfc;
 }
 
-.tags-sections {
+.categories-sections {
   display: flex;
   flex-direction: column;
   gap: 2rem;
