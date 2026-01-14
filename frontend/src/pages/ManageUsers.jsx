@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ManageUsers.css';
 
@@ -14,17 +14,7 @@ function ManageUsers() {
   const [totalPages, setTotalPages] = useState(1);
   const usersPerPage = 20;
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    fetchUsers();
-  }, [navigate, currentPage]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
@@ -54,7 +44,17 @@ function ManageUsers() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    fetchUsers();
+  }, [navigate, currentPage, fetchUsers]);
 
   const handleEditUser = (user) => {
     setEditingUser(user.id);

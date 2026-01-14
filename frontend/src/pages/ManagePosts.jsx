@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ManagePosts.css';
 
@@ -12,17 +12,7 @@ function ManagePosts() {
   const [totalPages, setTotalPages] = useState(1);
   const postsPerPage = 20;
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    fetchPosts();
-  }, [navigate, currentPage]);
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
@@ -49,7 +39,17 @@ function ManagePosts() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    fetchPosts();
+  }, [navigate, currentPage, fetchPosts]);
 
   const handleDeletePost = async (postId, postTitle) => {
     if (!window.confirm(`Are you sure you want to delete "${postTitle}"?`)) {

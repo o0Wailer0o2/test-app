@@ -102,6 +102,11 @@ function Home({ isAdmin }) {
     image: post.image
   }));
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSearch = (searchTerm) => {
     console.log('Searching for:', searchTerm);
     // Implement search functionality
