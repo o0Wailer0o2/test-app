@@ -22,11 +22,19 @@ function Home({ isAdmin }) {
         const response = await fetch(`http://localhost:3000/api/posts?page=${currentPage}&limit=${postsPerPage}`);
         const data = await response.json();
         
-        setPosts(data.posts || []);
-        setTotalPages(data.pagination?.pages || 1);
+        // Ensure we have valid data
+        if (data.posts && Array.isArray(data.posts)) {
+          setPosts(data.posts);
+          setTotalPages(data.pagination?.pages || 1);
+        } else {
+          console.error('Invalid posts data:', data);
+          setPosts([]);
+          setTotalPages(1);
+        }
       } catch (error) {
         console.error('Error fetching posts:', error);
         setPosts([]);
+        setTotalPages(1);
       } finally {
         setLoading(false);
       }
@@ -40,9 +48,16 @@ function Home({ isAdmin }) {
       try {
         const response = await fetch('http://localhost:3000/api/posts/categories');
         const data = await response.json();
-        setCategories(data || []);
+        // Ensure data is an array before setting state
+        if (Array.isArray(data)) {
+          setCategories(data);
+        } else {
+          console.error('Categories API returned non-array data:', data);
+          setCategories([]);
+        }
       } catch (error) {
         console.error('Error fetching categories:', error);
+        setCategories([]);
       }
     };
 
