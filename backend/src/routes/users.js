@@ -96,6 +96,35 @@ router.put('/:id', generalLimiter, authenticateToken, async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update this profile' });
     }
 
+    // Validate name if provided
+    if (name !== undefined) {
+      if (typeof name !== 'string' || name.trim().length === 0) {
+        return res.status(400).json({ message: 'Name cannot be empty' });
+      }
+      if (name.length > 100) {
+        return res.status(400).json({ message: 'Name is too long (max 100 characters)' });
+      }
+    }
+
+    // Validate email if provided
+    if (email !== undefined) {
+      if (typeof email !== 'string' || email.trim().length === 0) {
+        return res.status(400).json({ message: 'Email cannot be empty' });
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: 'Invalid email format' });
+      }
+      // Check if email is already taken by another user
+      const [existingUsers] = await pool.query(
+        'SELECT id FROM users WHERE email = ? AND id != ?',
+        [email, req.params.id]
+      );
+      if (existingUsers.length > 0) {
+        return res.status(400).json({ message: 'Email is already in use' });
+      }
+    }
+
     // Build update query dynamically based on provided fields
     const updates = [];
     const values = [];
@@ -110,11 +139,11 @@ router.put('/:id', generalLimiter, authenticateToken, async (req, res) => {
     }
     if (name !== undefined) {
       updates.push('name = ?');
-      values.push(name);
+      values.push(name.trim());
     }
     if (email !== undefined) {
       updates.push('email = ?');
-      values.push(email);
+      values.push(email.trim());
     }
 
     if (updates.length === 0) {
