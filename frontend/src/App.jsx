@@ -10,7 +10,6 @@ import Profile from './pages/Profile';
 import Category from './pages/Category';
 import CreatePost from './pages/CreatePost';
 import EditPost from './pages/EditPost';
-import ManageTags from './pages/ManageTags';
 import ManageCategories from './pages/ManageCategories';
 import './App.css';
 
@@ -70,7 +69,6 @@ function App() {
           />
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/edit-post/:id" element={<EditPost />} />
-          <Route path="/admin/tags" element={<ManageTags />} />
           <Route path="/admin/categories" element={<ManageCategories />} />
         </Routes>
       </div>
