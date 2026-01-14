@@ -6,6 +6,7 @@ import postRoutes from './routes/posts.js';
 import commentRoutes from './routes/comments.js';
 import userRoutes from './routes/users.js';
 import tagRoutes from './routes/tags.js';
+import categoryRoutes from './routes/categories.js';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/tags', tagRoutes);
+app.use('/api/categories', categoryRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
