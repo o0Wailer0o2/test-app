@@ -1,0 +1,274 @@
+.manage-users-container {
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.manage-users-page {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.page-header h1 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 2rem;
+}
+
+.page-subtitle {
+  color: #7f8c8d;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.alert-error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef5350;
+}
+
+.alert-success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #66bb6a;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+.error-page {
+  text-align: center;
+  padding: 3rem;
+}
+
+.error-page h2 {
+  color: #c62828;
+  margin-bottom: 1rem;
+}
+
+.error-page p {
+  color: #7f8c8d;
+  margin-bottom: 2rem;
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  color: #7f8c8d;
+}
+
+.no-data p {
+  font-size: 1.1rem;
+}
+
+.users-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 2rem;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.users-table thead {
+  background-color: #f8f9fa;
+}
+
+.users-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.users-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #ecf0f1;
+  vertical-align: middle;
+}
+
+.users-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-avatar-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.role-badge.admin {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.role-badge.user {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.btn-edit-small,
+.btn-delete-small,
+.btn-save-small,
+.btn-cancel-small {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.25rem 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.btn-edit-small:hover,
+.btn-delete-small:hover,
+.btn-save-small:hover,
+.btn-cancel-small:hover {
+  transform: scale(1.2);
+}
+
+.btn-save-small {
+  color: #27ae60;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.btn-cancel-small {
+  color: #e74c3c;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.edit-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #ecf0f1;
+}
+
+.page-btn {
+  padding: 0.5rem 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+.page-btn:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.page-info {
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.page-actions {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #ecf0f1;
+  text-align: center;
+}
+
+.btn-secondary {
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #7f8c8d;
+}
+
+@media (max-width: 768px) {
+  .manage-users-container {
+    padding: 0 1rem;
+  }
+
+  .users-table {
+    font-size: 0.85rem;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .user-avatar-small {
+    width: 32px;
+    height: 32px;
+  }
+}
