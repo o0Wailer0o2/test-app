@@ -52,20 +52,20 @@ function PostDetail() {
   }, [id]);
 
   useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await fetch(`http://localhost:3000/api/comments/post/${id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setComments(data);
-        }
-      } catch (err) {
-        console.error('Error fetching comments:', err);
-      }
-    };
-
     fetchComments();
   }, [id]);
+
+  const fetchComments = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/comments/post/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setComments(data);
+      }
+    } catch (err) {
+      console.error('Error fetching comments:', err);
+    }
+  };
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
@@ -103,12 +103,7 @@ function PostDetail() {
       }
 
       // Refresh comments
-      const commentsResponse = await fetch(`http://localhost:3000/api/comments/post/${id}`);
-      if (commentsResponse.ok) {
-        const data = await commentsResponse.json();
-        setComments(data);
-      }
-
+      await fetchComments();
       setNewComment('');
     } catch (err) {
       setCommentError(err.message);
@@ -136,11 +131,7 @@ function PostDetail() {
       }
 
       // Refresh comments
-      const commentsResponse = await fetch(`http://localhost:3000/api/comments/post/${id}`);
-      if (commentsResponse.ok) {
-        const data = await commentsResponse.json();
-        setComments(data);
-      }
+      await fetchComments();
     } catch (err) {
       console.error('Error deleting comment:', err);
       alert('Failed to delete comment: ' + err.message);

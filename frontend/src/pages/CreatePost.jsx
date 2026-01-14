@@ -73,10 +73,8 @@ function CreatePost() {
       const data = await response.json();
       setSuccess(true);
       
-      // Redirect to the new post after a short delay
-      setTimeout(() => {
-        navigate(`/post/${data.postId}`);
-      }, 1500);
+      // Navigate immediately after successful creation
+      navigate(`/post/${data.postId}`);
     } catch (err) {
       setError(err.message);
     } finally {

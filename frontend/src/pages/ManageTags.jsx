@@ -131,6 +131,14 @@ function ManageTags() {
       return;
     }
 
+    const postId = parseInt(selectedPost, 10);
+    const tagId = parseInt(selectedTag, 10);
+
+    if (isNaN(postId) || isNaN(tagId)) {
+      setError('Invalid post or tag selection');
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:3000/api/tags/assign', {
@@ -140,8 +148,8 @@ function ManageTags() {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ 
-          postId: parseInt(selectedPost), 
-          tagId: parseInt(selectedTag) 
+          postId, 
+          tagId 
         })
       });
 
