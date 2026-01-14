@@ -11,6 +11,8 @@ import Category from './pages/Category';
 import CreatePost from './pages/CreatePost';
 import EditPost from './pages/EditPost';
 import ManageCategories from './pages/ManageCategories';
+import ManagePosts from './pages/ManagePosts';
+import ManageUsers from './pages/ManageUsers';
 import './App.css';
 
 function App() {
@@ -70,6 +72,8 @@ function App() {
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/edit-post/:id" element={<EditPost />} />
           <Route path="/admin/categories" element={<ManageCategories />} />
+          <Route path="/admin/posts" element={<ManagePosts />} />
+          <Route path="/admin/users" element={<ManageUsers />} />
         </Routes>
       </div>
     </Router>

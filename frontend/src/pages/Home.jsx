@@ -102,15 +102,6 @@ function Home({ isAdmin }) {
     image: post.image
   }));
 
-  const user = {
-    name: 'Sarah Johnson',
-    role: 'Blogger & Content Creator',
-    bio: 'Sharing delicious recipes and cooking tips for home cooks.',
-    avatar: 'https://ui-avatars.com/api/?name=Sarah+Johnson&size=200&background=3498db&color=fff',
-    postCount: 42,
-    followers: 1.2
-  };
-
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -157,7 +148,7 @@ function Home({ isAdmin }) {
 
           {/* Sidebar */}
           <aside className="sidebar-wrapper">
-            <ProfileCard user={user} />
+            <ProfileCard />
             {isAdmin && <AdminPanel isAdmin={isAdmin} />}
             <Sidebar categories={categories} onSearch={handleSearch} />
           </aside>
