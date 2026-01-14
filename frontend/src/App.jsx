@@ -9,7 +9,8 @@ import PostDetail from './pages/PostDetail';
 import Profile from './pages/Profile';
 import Category from './pages/Category';
 import CreatePost from './pages/CreatePost';
-import ManageTags from './pages/ManageTags';
+import EditPost from './pages/EditPost';
+import ManageCategories from './pages/ManageCategories';
 import './App.css';
 
 function App() {
@@ -67,7 +68,8 @@ function App() {
             element={<Category isAdmin={user?.isAdmin} />} 
           />
           <Route path="/create-post" element={<CreatePost />} />
-          <Route path="/admin/tags" element={<ManageTags />} />
+          <Route path="/edit-post/:id" element={<EditPost />} />
+          <Route path="/admin/categories" element={<ManageCategories />} />
         </Routes>
       </div>
     </Router>

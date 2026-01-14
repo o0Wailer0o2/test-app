@@ -12,10 +12,6 @@ function AdminPanel({ isAdmin }) {
           <span className="admin-icon">➕</span>
           Create New Post
         </Link>
-        <Link to="/admin/tags" className="admin-link">
-          <span className="admin-icon">🏷️</span>
-          Manage Tags
-        </Link>
         <Link to="/admin/categories" className="admin-link">
           <span className="admin-icon">🗂️</span>
           Manage Categories
