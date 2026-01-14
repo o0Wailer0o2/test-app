@@ -16,6 +16,7 @@ function Navbar({ isLoggedIn, onLogout }) {
           <li><Link to="/contact">Contact</Link></li>
           {isLoggedIn ? (
             <>
+              <li><Link to="/create-post" className="btn-create-post">Create Post</Link></li>
               <li><Link to="/profile">Profile</Link></li>
               <li><button onClick={onLogout} className="btn-logout">Logout</button></li>
             </>

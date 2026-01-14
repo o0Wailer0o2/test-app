@@ -8,6 +8,8 @@ import Contact from './pages/Contact';
 import PostDetail from './pages/PostDetail';
 import Profile from './pages/Profile';
 import Category from './pages/Category';
+import CreatePost from './pages/CreatePost';
+import ManageTags from './pages/ManageTags';
 import './App.css';
 
 function App() {
@@ -63,6 +65,8 @@ function App() {
             path="/category/:slug" 
             element={<Category isAdmin={user?.isAdmin} />} 
           />
+          <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/admin/tags" element={<ManageTags />} />
         </Routes>
       </div>
     </Router>

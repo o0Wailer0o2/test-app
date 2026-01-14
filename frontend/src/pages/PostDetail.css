@@ -148,3 +148,145 @@
     gap: 0.5rem;
   }
 }
+
+/* Comments Section */
+.comments-section {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.comments-title {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+.comment-form {
+  margin-bottom: 2rem;
+}
+
+.comment-form textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.comment-form textarea:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.comment-error {
+  color: #e74c3c;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.btn-submit-comment {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.3s ease;
+}
+
+.btn-submit-comment:hover:not(:disabled) {
+  background: #2980b9;
+}
+
+.btn-submit-comment:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-prompt {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-prompt a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-prompt a:hover {
+  text-decoration: underline;
+}
+
+.no-comments {
+  text-align: center;
+  color: #7f8c8d;
+  padding: 2rem;
+  font-style: italic;
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.comment {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 5px;
+  border-left: 3px solid #3498db;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.comment-author {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.comment-date {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+}
+
+.comment-content {
+  color: #34495e;
+  line-height: 1.6;
+  margin-top: 0.5rem;
+  white-space: pre-wrap;
+}
+
+.btn-delete-comment {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.3s ease;
+}
+
+.btn-delete-comment:hover {
+  background: #c0392b;
+}

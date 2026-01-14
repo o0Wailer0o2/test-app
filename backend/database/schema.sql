@@ -64,9 +64,25 @@ CREATE TABLE IF NOT EXISTS post_views (
   INDEX idx_post_session (post_id, session_id)
 );
 
--- Insert sample admin user (password: admin123)
+-- Create tags table
+CREATE TABLE IF NOT EXISTS tags (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(100) UNIQUE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create post_tags junction table
+CREATE TABLE IF NOT EXISTS post_tags (
+  post_id INT NOT NULL,
+  tag_id INT NOT NULL,
+  PRIMARY KEY (post_id, tag_id),
+  FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+);
+
+-- Insert sample admin user (password: admin)
 INSERT INTO users (name, email, password, is_admin) VALUES
-('Admin User', 'admin@blog.com', '$2b$10$NyGkpaldV07ezTU6SEhNTOsamqzdHbctbsuos8GjzSiuNdOArb8lq', TRUE);
+('Admin User', 'admin@gmail.com', '$2b$10$zmdHa/iATOBdzPHYpz2QCOmNxrYFAdbOH6dMTPygWmI4b5eTBjRya', TRUE);
 
 -- Insert sample categories
 INSERT INTO categories (name, slug, description) VALUES

@@ -7,8 +7,25 @@ function PostDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
+  const [commentLoading, setCommentLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [commentError, setCommentError] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Load user from localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error('Error parsing user:', e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -33,6 +50,102 @@ function PostDetail() {
 
     fetchPost();
   }, [id]);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/comments/post/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setComments(data);
+        }
+      } catch (err) {
+        console.error('Error fetching comments:', err);
+      }
+    };
+
+    fetchComments();
+  }, [id]);
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    if (!newComment.trim()) {
+      setCommentError('Comment cannot be empty');
+      return;
+    }
+
+    setCommentLoading(true);
+    setCommentError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3000/api/comments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          postId: id,
+          content: newComment
+        })
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to post comment');
+      }
+
+      // Refresh comments
+      const commentsResponse = await fetch(`http://localhost:3000/api/comments/post/${id}`);
+      if (commentsResponse.ok) {
+        const data = await commentsResponse.json();
+        setComments(data);
+      }
+
+      setNewComment('');
+    } catch (err) {
+      setCommentError(err.message);
+    } finally {
+      setCommentLoading(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Are you sure you want to delete this comment?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3000/api/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete comment');
+      }
+
+      // Refresh comments
+      const commentsResponse = await fetch(`http://localhost:3000/api/comments/post/${id}`);
+      if (commentsResponse.ok) {
+        const data = await commentsResponse.json();
+        setComments(data);
+      }
+    } catch (err) {
+      console.error('Error deleting comment:', err);
+      alert('Failed to delete comment: ' + err.message);
+    }
+  };
 
   if (loading) {
     return (
@@ -104,6 +217,75 @@ function PostDetail() {
           </button>
         </footer>
       </article>
+
+      {/* Comments Section */}
+      <section className="comments-section">
+        <h2 className="comments-title">
+          Comments ({comments.length})
+        </h2>
+
+        {/* Comment Form - Only for logged in users */}
+        {user ? (
+          <form onSubmit={handleCommentSubmit} className="comment-form">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Write a comment..."
+              rows="4"
+              disabled={commentLoading}
+            />
+            {commentError && (
+              <div className="comment-error">{commentError}</div>
+            )}
+            <button 
+              type="submit" 
+              className="btn-submit-comment"
+              disabled={commentLoading}
+            >
+              {commentLoading ? 'Posting...' : 'Post Comment'}
+            </button>
+          </form>
+        ) : (
+          <div className="login-prompt">
+            <p>
+              Please <a href="/login" onClick={(e) => { e.preventDefault(); navigate('/login'); }}>log in</a> to leave a comment.
+            </p>
+          </div>
+        )}
+
+        {/* Comments List */}
+        <div className="comments-list">
+          {comments.length === 0 ? (
+            <p className="no-comments">No comments yet. Be the first to comment!</p>
+          ) : (
+            comments.map((comment) => (
+              <div key={comment.id} className="comment">
+                <div className="comment-header">
+                  <span className="comment-author">{comment.author_name}</span>
+                  <span className="comment-date">
+                    {new Date(comment.created_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </span>
+                </div>
+                <div className="comment-content">{comment.content}</div>
+                {(user?.id === comment.author_id || user?.isAdmin) && (
+                  <button
+                    onClick={() => handleDeleteComment(comment.id)}
+                    className="btn-delete-comment"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </section>
     </div>
   );
 }
