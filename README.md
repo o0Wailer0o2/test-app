@@ -5,7 +5,7 @@ A full-stack personal blog application built with React, Node.js, Express, and M
 ## Features
 
 ### For Logged-in Users:
-- Create new blog posts
+- Create new blog posts with image uploads
 - Read posts created by others
 - Comment on posts made by others
 - Edit and delete their own posts
@@ -18,12 +18,13 @@ A full-stack personal blog application built with React, Node.js, Express, and M
 
 ### Admin Features:
 - Manage all posts
-- Add new posts
+- Add new posts with image uploads
 - Create and manage tags
 - Assign tags to posts
 - Delete posts and comments
 - Manage categories
-- Manage users
+- Manage users (create, edit, delete, block/unblock)
+- Block/unblock users from accessing the platform
 
 ## Tech Stack
 
