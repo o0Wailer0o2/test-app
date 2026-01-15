@@ -76,6 +76,12 @@
   min-height: 100px;
 }
 
+.form-help {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
 .form-actions {
   display: flex;
   gap: 1rem;

@@ -154,7 +154,9 @@
 .btn-edit-small,
 .btn-delete-small,
 .btn-save-small,
-.btn-cancel-small {
+.btn-cancel-small,
+.btn-warning-small,
+.btn-success-small {
   background: none;
   border: none;
   cursor: pointer;
@@ -166,8 +168,97 @@
 .btn-edit-small:hover,
 .btn-delete-small:hover,
 .btn-save-small:hover,
-.btn-cancel-small:hover {
+.btn-cancel-small:hover,
+.btn-warning-small:hover,
+.btn-success-small:hover {
   transform: scale(1.2);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-badge.active {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-badge.blocked {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.create-user-form-wrapper {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.create-user-form-wrapper h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  color: #2c3e50;
+}
+
+.create-user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  align-self: flex-start;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
 }
 
 .btn-save-small {

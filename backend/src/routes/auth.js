@@ -54,6 +54,11 @@ router.post('/login', authLimiter, async (req, res) => {
 
     const user = users[0];
 
+    // Check if user is blocked
+    if (user.is_blocked) {
+      return res.status(403).json({ message: 'Account has been blocked. Please contact administrator.' });
+    }
+
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user.password);
 
