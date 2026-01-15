@@ -12,6 +12,8 @@ function ManageUsers() {
   const [editForm, setEditForm] = useState({ name: '', email: '', bio: '', avatar: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [createForm, setCreateForm] = useState({ name: '', email: '', password: '', is_admin: false });
   const usersPerPage = 20;
 
   const fetchUsers = useCallback(async () => {
@@ -129,6 +131,93 @@ function ManageUsers() {
     }
   };
 
+  const handleBlockUser = async (userId, userName) => {
+    if (!window.confirm(`Are you sure you want to block user "${userName}"?`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3000/api/users/${userId}/block`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to block user');
+      }
+
+      setSuccess('User blocked successfully!');
+      fetchUsers();
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError(err.message);
+      setTimeout(() => setError(null), 5000);
+    }
+  };
+
+  const handleUnblockUser = async (userId, userName) => {
+    if (!window.confirm(`Are you sure you want to unblock user "${userName}"?`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3000/api/users/${userId}/unblock`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to unblock user');
+      }
+
+      setSuccess('User unblocked successfully!');
+      fetchUsers();
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError(err.message);
+      setTimeout(() => setError(null), 5000);
+    }
+  };
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3000/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(createForm)
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to create user');
+      }
+
+      setSuccess('User created successfully!');
+      setShowCreateForm(false);
+      setCreateForm({ name: '', email: '', password: '', is_admin: false });
+      fetchUsers();
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError(err.message);
+      setTimeout(() => setError(null), 5000);
+    }
+  };
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -162,10 +251,71 @@ function ManageUsers() {
         <div className="page-header">
           <h1>Manage Users</h1>
           <p className="page-subtitle">View and manage all registered users</p>
+          <button 
+            onClick={() => setShowCreateForm(!showCreateForm)} 
+            className="btn-primary"
+            style={{ marginTop: '10px' }}
+          >
+            {showCreateForm ? 'Cancel' : 'Create New User'}
+          </button>
         </div>
 
         {error && <div className="alert alert-error">{error}</div>}
         {success && <div className="alert alert-success">{success}</div>}
+
+        {showCreateForm && (
+          <div className="create-user-form-wrapper">
+            <h2>Create New User</h2>
+            <form onSubmit={handleCreateUser} className="create-user-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Name *</label>
+                  <input
+                    type="text"
+                    value={createForm.name}
+                    onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                    required
+                    placeholder="Enter user name"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Email *</label>
+                  <input
+                    type="email"
+                    value={createForm.email}
+                    onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                    required
+                    placeholder="Enter email address"
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Password *</label>
+                  <input
+                    type="password"
+                    value={createForm.password}
+                    onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                    required
+                    placeholder="Enter password"
+                    minLength="6"
+                  />
+                </div>
+                <div className="form-group">
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <input
+                      type="checkbox"
+                      checked={createForm.is_admin}
+                      onChange={(e) => setCreateForm({ ...createForm, is_admin: e.target.checked })}
+                    />
+                    Admin User
+                  </label>
+                </div>
+              </div>
+              <button type="submit" className="btn-primary">Create User</button>
+            </form>
+          </div>
+        )}
 
         {users.length === 0 ? (
           <div className="no-data">
@@ -181,6 +331,7 @@ function ManageUsers() {
                     <th>Name</th>
                     <th>Email</th>
                     <th>Role</th>
+                    <th>Status</th>
                     <th>Posts</th>
                     <th>Joined</th>
                     <th>Actions</th>
@@ -261,6 +412,13 @@ function ManageUsers() {
                               <span className="role-badge user">User</span>
                             )}
                           </td>
+                          <td>
+                            {user.is_blocked ? (
+                              <span className="status-badge blocked">Blocked</span>
+                            ) : (
+                              <span className="status-badge active">Active</span>
+                            )}
+                          </td>
                           <td className="text-center">{user.post_count || 0}</td>
                           <td>
                             {new Date(user.created_at).toLocaleDateString('en-US', {
@@ -277,6 +435,23 @@ function ManageUsers() {
                             >
                               ✏️
                             </button>
+                            {user.is_blocked ? (
+                              <button
+                                onClick={() => handleUnblockUser(user.id, user.name)}
+                                className="btn-success-small"
+                                title="Unblock"
+                              >
+                                🔓
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleBlockUser(user.id, user.name)}
+                                className="btn-warning-small"
+                                title="Block"
+                              >
+                                🔒
+                              </button>
+                            )}
                             <button
                               onClick={() => handleDeleteUser(user.id, user.name)}
                               className="btn-delete-small"

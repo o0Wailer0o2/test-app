@@ -2,6 +2,7 @@ import express from 'express';
 import pool from '../config/database.js';
 import { authenticateToken, isAdmin } from '../middleware/auth.js';
 import { generalLimiter, createLimiter } from '../middleware/rateLimiter.js';
+import upload from '../middleware/upload.js';
 
 const router = express.Router();
 
@@ -220,13 +221,14 @@ router.get('/:id', generalLimiter, async (req, res) => {
 });
 
 // Create post (requires authentication)
-router.post('/', createLimiter, authenticateToken, async (req, res) => {
+router.post('/', createLimiter, authenticateToken, upload.single('image'), async (req, res) => {
   try {
     const { title, content, excerpt, category } = req.body;
+    const image = req.file ? `/uploads/${req.file.filename}` : null;
 
     const [result] = await pool.query(
-      'INSERT INTO posts (title, content, excerpt, category, author_id) VALUES (?, ?, ?, ?, ?)',
-      [title, content, excerpt, category, req.user.id]
+      'INSERT INTO posts (title, content, excerpt, category, image, author_id) VALUES (?, ?, ?, ?, ?, ?)',
+      [title, content, excerpt, category, image, req.user.id]
     );
 
     res.status(201).json({
@@ -240,7 +242,7 @@ router.post('/', createLimiter, authenticateToken, async (req, res) => {
 });
 
 // Update post (requires authentication and ownership)
-router.put('/:id', generalLimiter, authenticateToken, async (req, res) => {
+router.put('/:id', generalLimiter, authenticateToken, upload.single('image'), async (req, res) => {
   try {
     const { title, content, excerpt, category } = req.body;
 
@@ -258,10 +260,20 @@ router.put('/:id', generalLimiter, authenticateToken, async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to edit this post' });
     }
 
-    await pool.query(
-      'UPDATE posts SET title = ?, content = ?, excerpt = ?, category = ? WHERE id = ?',
-      [title, content, excerpt, category, req.params.id]
-    );
+    // Update image if new one is uploaded
+    let updateQuery;
+    let updateParams;
+    
+    if (req.file) {
+      const image = `/uploads/${req.file.filename}`;
+      updateQuery = 'UPDATE posts SET title = ?, content = ?, excerpt = ?, category = ?, image = ? WHERE id = ?';
+      updateParams = [title, content, excerpt, category, image, req.params.id];
+    } else {
+      updateQuery = 'UPDATE posts SET title = ?, content = ?, excerpt = ?, category = ? WHERE id = ?';
+      updateParams = [title, content, excerpt, category, req.params.id];
+    }
+
+    await pool.query(updateQuery, updateParams);
 
     res.json({ message: 'Post updated successfully' });
   } catch (error) {

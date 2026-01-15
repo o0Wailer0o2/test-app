@@ -175,7 +175,7 @@ router.get('/', generalLimiter, authenticateToken, async (req, res) => {
     const offset = (page - 1) * limit;
 
     const [users] = await pool.query(
-      `SELECT u.id, u.name, u.email, u.is_admin, u.avatar, u.bio, u.created_at,
+      `SELECT u.id, u.name, u.email, u.is_admin, u.is_blocked, u.avatar, u.bio, u.created_at,
        (SELECT COUNT(*) FROM posts WHERE author_id = u.id) as post_count
        FROM users u
        ORDER BY u.created_at DESC
@@ -225,6 +225,108 @@ router.delete('/:id', generalLimiter, authenticateToken, async (req, res) => {
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Delete user error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Block user (admin only)
+router.put('/:id/block', generalLimiter, authenticateToken, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ message: 'Access denied. Admin only.' });
+    }
+
+    // Prevent admin from blocking themselves
+    if (req.user.id === parseInt(req.params.id)) {
+      return res.status(400).json({ message: 'Cannot block your own account' });
+    }
+
+    const [users] = await pool.query('SELECT * FROM users WHERE id = ?', [req.params.id]);
+
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    await pool.query('UPDATE users SET is_blocked = TRUE WHERE id = ?', [req.params.id]);
+
+    res.json({ message: 'User blocked successfully' });
+  } catch (error) {
+    console.error('Block user error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Unblock user (admin only)
+router.put('/:id/unblock', generalLimiter, authenticateToken, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ message: 'Access denied. Admin only.' });
+    }
+
+    const [users] = await pool.query('SELECT * FROM users WHERE id = ?', [req.params.id]);
+
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    await pool.query('UPDATE users SET is_blocked = FALSE WHERE id = ?', [req.params.id]);
+
+    res.json({ message: 'User unblocked successfully' });
+  } catch (error) {
+    console.error('Unblock user error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Create user (admin only)
+router.post('/', generalLimiter, authenticateToken, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ message: 'Access denied. Admin only.' });
+    }
+
+    const { name, email, password, is_admin = false } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Name, email and password are required' });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
+
+    // Check if email already exists
+    const [existingUsers] = await pool.query(
+      'SELECT id FROM users WHERE email = ?',
+      [email]
+    );
+
+    if (existingUsers.length > 0) {
+      return res.status(400).json({ message: 'Email is already in use' });
+    }
+
+    // Hash password
+    const bcrypt = await import('bcryptjs');
+    const hashedPassword = await bcrypt.default.hash(password, 10);
+
+    // Insert user
+    const [result] = await pool.query(
+      'INSERT INTO users (name, email, password, is_admin) VALUES (?, ?, ?, ?)',
+      [name, email, hashedPassword, is_admin]
+    );
+
+    res.status(201).json({
+      message: 'User created successfully',
+      userId: result.insertId
+    });
+  } catch (error) {
+    console.error('Create user error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
