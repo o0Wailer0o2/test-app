@@ -5,7 +5,7 @@ A full-stack personal blog application built with React, Node.js, Express, and M
 ## Features
 
 ### For Logged-in Users:
-- Create new blog posts with image uploads
+- Create new blog posts with **enhanced image upload error handling**
 - Read posts created by others
 - Comment on posts made by others
 - Edit and delete their own posts
@@ -15,6 +15,7 @@ A full-stack personal blog application built with React, Node.js, Express, and M
 - Read blog posts
 - View comments
 - Browse categories
+- **Send contact messages via email**
 
 ### Admin Features:
 - Manage all posts
@@ -105,7 +106,17 @@ DB_NAME=blog_db
 JWT_SECRET=your_secret_key
 ```
 
-5. Start the backend server:
+5. (Optional) Configure email settings for the contact form in the `.env` file:
+```
+EMAIL_SERVICE=gmail
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASSWORD=your_app_specific_password
+EMAIL_RECIPIENT=admin@example.com
+```
+
+**Note:** For Gmail, you need to generate an [App Password](https://support.google.com/accounts/answer/185833) instead of using your regular password. If email is not configured, contact form submissions will be logged to the console.
+
+6. Start the backend server:
 ```bash
 npm run dev
 ```
@@ -149,6 +160,9 @@ The frontend will be available at `http://localhost:5173`
 - `POST /api/comments` - Create a comment (requires authentication)
 - `DELETE /api/comments/:id` - Delete a comment (requires authentication and ownership)
 
+### Contact
+- `POST /api/contact` - Send a contact form message via email
+
 ## Default Admin Account
 
 - Email: `admin@gmail.com`
@@ -189,6 +203,51 @@ npm start
 - ✅ Comment system
 - ✅ Authorization middleware
 - ✅ MySQL database integration
+- ✅ **Email sending for contact form** (with optional configuration)
+- ✅ **Enhanced image upload error handling with user-friendly messages**
+
+## Recent Feature Enhancements
+
+### 1. Email Sending for Contact Form
+
+The contact form now sends emails to a specified recipient when users submit messages. 
+
+**Features:**
+- Sends formatted HTML emails with contact details
+- Validates email format and required fields
+- Falls back to console logging if email is not configured
+- Handles email service errors gracefully
+- User-friendly error and success messages
+
+**Configuration:**
+To enable email sending, add the following to your `.env` file:
+```env
+EMAIL_SERVICE=gmail
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASSWORD=your_app_specific_password
+EMAIL_RECIPIENT=admin@example.com
+```
+
+For Gmail, you must use an [App Password](https://support.google.com/accounts/answer/185833) instead of your regular password.
+
+### 2. Enhanced Image Upload Error Handling
+
+Image uploads now provide better error messages and user prompts:
+
+**Features:**
+- Detailed error messages for file size limits (5MB maximum)
+- Clear messages for invalid file types (only jpeg, jpg, png, gif, webp allowed)
+- Automatic clearing of invalid file selections
+- User prompt to reattempt upload after errors
+- Scroll to error message for better visibility
+- Server-side validation with specific error codes
+
+**Error Handling:**
+- File size exceeds 5MB: "Image file size must be less than 5MB. Please select a smaller image and try again."
+- Invalid file type: "Only image files are allowed (jpeg, jpg, png, gif, webp). Please select a valid image file and try again."
+- General upload error: "Failed to upload image. Please check the file and try again."
+
+All errors include a prompt to help users understand what went wrong and how to fix it.
 
 ## Contributing
 
