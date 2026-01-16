@@ -4,6 +4,18 @@ import { generalLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
 
+// Helper function to escape HTML special characters to prevent XSS
+const escapeHtml = (text) => {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, (m) => map[m]);
+};
+
 // Create a transporter for sending emails
 const createTransporter = () => {
   // Check if email configuration is provided
@@ -72,13 +84,13 @@ router.post('/', generalLimiter, async (req, res) => {
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #333;">New Contact Form Submission</h2>
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px;">
-            <p><strong>Name:</strong> ${name}</p>
-            <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-            <p><strong>Subject:</strong> ${subject}</p>
+            <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+            <p><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
+            <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
           </div>
           <div style="margin-top: 20px;">
             <h3 style="color: #333;">Message:</h3>
-            <p style="white-space: pre-wrap;">${message}</p>
+            <p style="white-space: pre-wrap;">${escapeHtml(message)}</p>
           </div>
           <hr style="margin-top: 30px; border: none; border-top: 1px solid #ddd;">
           <p style="color: #666; font-size: 12px;">This message was sent from your blog contact form.</p>

@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CreatePost.css';
 
 function CreatePost() {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -106,8 +107,9 @@ function CreatePost() {
         )) {
           // Clear the image file so user can select a new one
           setImageFile(null);
-          const fileInput = document.getElementById('image');
-          if (fileInput) fileInput.value = '';
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
         }
         throw new Error(data.message || 'Failed to create post');
       }
@@ -200,6 +202,7 @@ function CreatePost() {
               type="file"
               id="image"
               name="image"
+              ref={fileInputRef}
               onChange={handleImageChange}
               accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
             />

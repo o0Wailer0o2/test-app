@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './EditPost.css';
 
 function EditPost() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -136,8 +137,9 @@ function EditPost() {
         )) {
           // Clear the image file so user can select a new one
           setImageFile(null);
-          const fileInput = document.getElementById('image');
-          if (fileInput) fileInput.value = '';
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
         }
         throw new Error(data.message || 'Failed to update post');
       }
@@ -235,6 +237,7 @@ function EditPost() {
               type="file"
               id="image"
               name="image"
+              ref={fileInputRef}
               onChange={handleImageChange}
               accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
             />
