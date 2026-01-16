@@ -63,8 +63,7 @@ router.post('/', generalLimiter, async (req, res) => {
       console.log('Message:', message);
       
       return res.status(200).json({ 
-        message: 'Your message has been received. We will get back to you soon!',
-        note: 'Email service not configured. Message logged to console.'
+        message: 'Your message has been received. We will get back to you soon!'
       });
     }
 
