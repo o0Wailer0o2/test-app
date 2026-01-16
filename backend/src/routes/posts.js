@@ -1,4 +1,5 @@
 import express from 'express';
+import multer from 'multer';
 import pool from '../config/database.js';
 import { authenticateToken, isAdmin } from '../middleware/auth.js';
 import { generalLimiter, createLimiter } from '../middleware/rateLimiter.js';
@@ -221,7 +222,35 @@ router.get('/:id', generalLimiter, async (req, res) => {
 });
 
 // Create post (requires authentication)
-router.post('/', createLimiter, authenticateToken, upload.single('image'), async (req, res) => {
+router.post('/', createLimiter, authenticateToken, (req, res, next) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      // Handle multer errors
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({ 
+            message: 'Image file size must be less than 5MB. Please select a smaller image and try again.' 
+          });
+        }
+        return res.status(400).json({ 
+          message: `Upload error: ${err.message}. Please try again.` 
+        });
+      }
+      
+      // Handle custom file filter errors
+      if (err.message.includes('Only image files')) {
+        return res.status(400).json({ 
+          message: 'Only image files are allowed (jpeg, jpg, png, gif, webp). Please select a valid image file and try again.' 
+        });
+      }
+      
+      return res.status(400).json({ 
+        message: 'Failed to upload image. Please check the file and try again.' 
+      });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     const { title, content, excerpt, category } = req.body;
     const image = req.file ? `/uploads/${req.file.filename}` : null;
@@ -242,7 +271,35 @@ router.post('/', createLimiter, authenticateToken, upload.single('image'), async
 });
 
 // Update post (requires authentication and ownership)
-router.put('/:id', generalLimiter, authenticateToken, upload.single('image'), async (req, res) => {
+router.put('/:id', generalLimiter, authenticateToken, (req, res, next) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      // Handle multer errors
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({ 
+            message: 'Image file size must be less than 5MB. Please select a smaller image and try again.' 
+          });
+        }
+        return res.status(400).json({ 
+          message: `Upload error: ${err.message}. Please try again.` 
+        });
+      }
+      
+      // Handle custom file filter errors
+      if (err.message.includes('Only image files')) {
+        return res.status(400).json({ 
+          message: 'Only image files are allowed (jpeg, jpg, png, gif, webp). Please select a valid image file and try again.' 
+        });
+      }
+      
+      return res.status(400).json({ 
+        message: 'Failed to upload image. Please check the file and try again.' 
+      });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     const { title, content, excerpt, category } = req.body;
 

@@ -8,6 +8,7 @@ import postRoutes from './routes/posts.js';
 import commentRoutes from './routes/comments.js';
 import userRoutes from './routes/users.js';
 import categoryRoutes from './routes/categories.js';
+import contactRoutes from './routes/contact.js';
 import pool from './config/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,6 +32,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/contact', contactRoutes);
 // Tag routes removed as per requirement to remove tag feature
 
 // Health check

@@ -128,6 +128,17 @@ function EditPost() {
 
       if (!response.ok) {
         const data = await response.json();
+        // Check if the error is related to image upload
+        if (data.message && (
+          data.message.includes('image') || 
+          data.message.includes('upload') || 
+          data.message.includes('file')
+        )) {
+          // Clear the image file so user can select a new one
+          setImageFile(null);
+          const fileInput = document.getElementById('image');
+          if (fileInput) fileInput.value = '';
+        }
         throw new Error(data.message || 'Failed to update post');
       }
 
@@ -135,6 +146,8 @@ function EditPost() {
       navigate(`/post/${id}`);
     } catch (err) {
       setError(err.message);
+      // Scroll to error message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setSaving(false);
     }
@@ -156,6 +169,13 @@ function EditPost() {
         {error && (
           <div className="alert alert-error">
             {error}
+            {error.toLowerCase().includes('image') || 
+             error.toLowerCase().includes('upload') || 
+             error.toLowerCase().includes('file') ? (
+              <div style={{ marginTop: '10px', fontWeight: 'normal' }}>
+                Please select a different image and try again.
+              </div>
+            ) : null}
           </div>
         )}
 
