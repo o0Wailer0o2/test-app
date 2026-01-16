@@ -2,7 +2,7 @@ import express from 'express';
 import pool from '../config/database.js';
 import { authenticateToken, isAdmin } from '../middleware/auth.js';
 import { generalLimiter, createLimiter } from '../middleware/rateLimiter.js';
-import upload from '../middleware/upload.js';
+import upload, { handleMulterError } from '../middleware/upload.js';
 
 const router = express.Router();
 
@@ -221,7 +221,7 @@ router.get('/:id', generalLimiter, async (req, res) => {
 });
 
 // Create post (requires authentication)
-router.post('/', createLimiter, authenticateToken, upload.single('image'), async (req, res) => {
+router.post('/', createLimiter, authenticateToken, handleMulterError(upload.single('image')), async (req, res) => {
   try {
     const { title, content, excerpt, category } = req.body;
     const image = req.file ? `/uploads/${req.file.filename}` : null;
@@ -242,7 +242,7 @@ router.post('/', createLimiter, authenticateToken, upload.single('image'), async
 });
 
 // Update post (requires authentication and ownership)
-router.put('/:id', generalLimiter, authenticateToken, upload.single('image'), async (req, res) => {
+router.put('/:id', generalLimiter, authenticateToken, handleMulterError(upload.single('image')), async (req, res) => {
   try {
     const { title, content, excerpt, category } = req.body;
 

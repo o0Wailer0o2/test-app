@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CreatePost.css';
 
 function CreatePost() {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -98,6 +99,18 @@ function CreatePost() {
 
       if (!response.ok) {
         const data = await response.json();
+        // Check if the error is related to image upload
+        if (data.message && (
+          data.message.includes('image') || 
+          data.message.includes('upload') || 
+          data.message.includes('file')
+        )) {
+          // Clear the image file so user can select a new one
+          setImageFile(null);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+        }
         throw new Error(data.message || 'Failed to create post');
       }
 
@@ -108,6 +121,8 @@ function CreatePost() {
       navigate(`/post/${data.postId}`);
     } catch (err) {
       setError(err.message);
+      // Scroll to error message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setLoading(false);
     }
@@ -121,6 +136,13 @@ function CreatePost() {
         {error && (
           <div className="alert alert-error">
             {error}
+            {error.toLowerCase().includes('image') || 
+             error.toLowerCase().includes('upload') || 
+             error.toLowerCase().includes('file') ? (
+              <div style={{ marginTop: '10px', fontWeight: 'normal' }}>
+                Please select a different image and try again.
+              </div>
+            ) : null}
           </div>
         )}
 
@@ -180,6 +202,7 @@ function CreatePost() {
               type="file"
               id="image"
               name="image"
+              ref={fileInputRef}
               onChange={handleImageChange}
               accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
             />

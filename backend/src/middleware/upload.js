@@ -38,4 +38,37 @@ const upload = multer({
   fileFilter: fileFilter
 });
 
+// Multer error handling middleware
+export const handleMulterError = (upload) => {
+  return (req, res, next) => {
+    upload(req, res, (err) => {
+      if (err) {
+        // Handle multer errors
+        if (err instanceof multer.MulterError) {
+          if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({ 
+              message: 'Image file size must be less than 5MB. Please select a smaller image and try again.' 
+            });
+          }
+          return res.status(400).json({ 
+            message: `Upload error: ${err.message}. Please try again.` 
+          });
+        }
+        
+        // Handle custom file filter errors
+        if (err.message.includes('Only image files')) {
+          return res.status(400).json({ 
+            message: 'Only image files are allowed (jpeg, jpg, png, gif, webp). Please select a valid image file and try again.' 
+          });
+        }
+        
+        return res.status(400).json({ 
+          message: 'Failed to upload image. Please check the file and try again.' 
+        });
+      }
+      next();
+    });
+  };
+};
+
 export default upload;

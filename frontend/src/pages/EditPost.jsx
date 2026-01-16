@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './EditPost.css';
 
 function EditPost() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -128,6 +129,18 @@ function EditPost() {
 
       if (!response.ok) {
         const data = await response.json();
+        // Check if the error is related to image upload
+        if (data.message && (
+          data.message.includes('image') || 
+          data.message.includes('upload') || 
+          data.message.includes('file')
+        )) {
+          // Clear the image file so user can select a new one
+          setImageFile(null);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+        }
         throw new Error(data.message || 'Failed to update post');
       }
 
@@ -135,6 +148,8 @@ function EditPost() {
       navigate(`/post/${id}`);
     } catch (err) {
       setError(err.message);
+      // Scroll to error message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setSaving(false);
     }
@@ -156,6 +171,13 @@ function EditPost() {
         {error && (
           <div className="alert alert-error">
             {error}
+            {error.toLowerCase().includes('image') || 
+             error.toLowerCase().includes('upload') || 
+             error.toLowerCase().includes('file') ? (
+              <div style={{ marginTop: '10px', fontWeight: 'normal' }}>
+                Please select a different image and try again.
+              </div>
+            ) : null}
           </div>
         )}
 
@@ -215,6 +237,7 @@ function EditPost() {
               type="file"
               id="image"
               name="image"
+              ref={fileInputRef}
               onChange={handleImageChange}
               accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
             />
